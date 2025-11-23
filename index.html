@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem E-Jana SPIMF</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .auth-container {
+            max-width: 400px;
+            margin: 100px auto;
+            padding: 30px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        .main-container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        .nav-tabs .nav-link.active {
+            background-color: #0d6efd;
+            color: white;
+            font-weight: bold;
+        }
+        .code-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .code-text {
+            font-family: monospace;
+            font-size: 1.1rem;
+        }
+        .action-btn {
+            margin: 0 2px;
+            cursor: pointer;
+        }
+        .table th {
+            background-color: #0d6efd;
+            color: white;
+        }
+        .header {
+            background-color: #0d6efd;
+            color: white;
+            padding: 15px;
+            border-radius: 10px 10px 0 0;
+            margin-bottom: 20px;
+        }
+        .history-section {
+            margin-top: 30px;
+            padding: 15px;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+        }
+        .alert-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            min-width: 300px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Alert Message -->
+    <div id="alert-message" class="alert-message" style="display: none;"></div>
+
+    <!-- Authentication Pages -->
+    <div id="auth-pages">
+        <!-- Login Page -->
+        <div id="login-page" class="auth-container">
+            <h2 class="text-center mb-4">Log Masuk Sistem E-Jana SPIMF</h2>
+            <form id="login-form">
+                <div class="mb-3">
+                    <label for="username" class="form-label">Nama Pengguna</label>
+                    <input type="text" class="form-control" id="username" required>
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Kata Laluan</label>
+                    <input type="password" class="form-control" id="password" required>
+                </div>
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary" id="login-btn">Teruskan</button>
+                </div>
+                <div class="mt-3 text-center">
+                    <a href="#" id="show-signup">Daftar Akaun Baru</a> | 
+                    <a href="#" id="show-forgot">Lupa Kata Laluan?</a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Sign Up Page -->
+        <div id="signup-page" class="auth-container" style="display: none;">
+            <h2 class="text-center mb-4">Daftar Akaun Baru</h2>
+            <form id="signup-form">
+                <div class="mb-3">
+                    <label for="signup-username" class="form-label">Nama Pengguna</label>
+                    <input type="text" class="form-control" id="signup-username" required>
+                </div>
+                <div class="mb-3">
+                    <label for="signup-password" class="form-label">Kata Laluan</label>
+                    <input type="password" class="form-control" id="signup-password" required>
+                </div>
+                <div class="mb-3">
+                    <label for="signup-security" class="form-label">Soalan Keselamatan</label>
+                    <input type="text" class="form-control" id="signup-security" required>
+                </div>
+                <div class="mb-3">
+                    <label for="signup-dob" class="form-label">Tarikh Lahir</label>
+                    <input type="date" class="form-control" id="signup-dob" required>
+                </div>
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary" id="signup-btn">Daftar</button>
+                </div>
+                <div class="mt-3 text-center">
+                    <a href="#" id="show-login">Kembali ke Log Masuk</a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Forgot Password Page -->
+        <div id="forgot-page" class="auth-container" style="display: none;">
+            <h2 class="text-center mb-4">Lupa Kata Laluan</h2>
+            <form id="forgot-form">
+                <div class="mb-3">
+                    <label for="forgot-username" class="form-label">Nama Pengguna</label>
+                    <input type="text" class="form-control" id="forgot-username" required>
+                </div>
+                <div class="mb-3">
+                    <label for="forgot-security" class="form-label">Soalan Keselamatan</label>
+                    <input type="text" class="form-control" id="forgot-security" required>
+                </div>
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary" id="forgot-btn">Teruskan</button>
+                </div>
+                <div class="mt-3 text-center">
+                    <a href="#" id="show-login-from-forgot">Kembali ke Log Masuk</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Page -->
+    <div id="main-page" class="main-container" style="display: none;">
+        <div class="header">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2>Sistem E-Jana SPIMF</h2>
+                <div>
+                    <span id="user-name">Admin</span>
+                    <button id="logout-btn" class="btn btn-light btn-sm ms-2">Log Keluar</button>
+                </div>
+            </div>
+        </div>
+
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="user-code-tab" data-bs-toggle="tab" data-bs-target="#user-code" type="button" role="tab">E-Jana Kode User</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="id-card-tab" data-bs-toggle="tab" data-bs-target="#id-card" type="button" role="tab">E-Jana ID Card Registration</button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="myTabContent">
+            <!-- User Code Tab -->
+            <div class="tab-pane fade show active" id="user-code" role="tabpanel">
+                <div class="mt-4">
+                    <h4>E-Jana Kode User Spimf</h4>
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label for="user-count" class="form-label">Jumlah Kode User yang Dijana:</label>
+                            <input type="number" class="form-control" id="user-count" min="1" value="5">
+                        </div>
+                        <div class="col-md-4 d-flex align-items-end">
+                            <button id="generate-user-btn" class="btn btn-primary">Jana Kode User</button>
+                        </div>
+                    </div>
+                    
+                    <div id="user-results" class="mt-4">
+                        <div class="d-flex justify-content-between mb-2">
+                            <h5>Senarai Kode User</h5>
+                            <div>
+                                <button id="copy-all-user" class="btn btn-sm btn-success">🆙 Copy All</button>
+                                <button id="save-user-codes" class="btn btn-sm btn-info">💾 Simpan ke Google Sheets</button>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th width="5%">BIL</th>
+                                        <th width="30%">KODE USER</th>
+                                        <th width="65%">TINDAKAN</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="user-table-body">
+                                    <!-- User codes will be populated here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="history-section">
+                        <h5>Sejarah Kode User</h5>
+                        <button id="load-user-history" class="btn btn-sm btn-secondary mb-2">Muat Sejarah</button>
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>BIL</th>
+                                        <th>KODE USER</th>
+                                        <th>TARIKH</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="user-history-body">
+                                    <!-- User history will be populated here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ID Card Tab -->
+            <div class="tab-pane fade" id="id-card" role="tabpanel">
+                <div class="mt-4">
+                    <h4>E-Jana ID Card Registration</h4>
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label for="id-count" class="form-label">Jumlah ID Card yang Dijana:</label>
+                            <input type="number" class="form-control" id="id-count" min="1" value="5">
+                        </div>
+                        <div class="col-md-4 d-flex align-items-end">
+                            <button id="generate-id-btn" class="btn btn-primary">Jana ID Card</button>
+                        </div>
+                    </div>
+                    
+                    <div id="id-results" class="mt-4">
+                        <div class="d-flex justify-content-between mb-2">
+                            <h5>Senarai ID Card Registration</h5>
+                            <div>
+                                <button id="copy-all-id" class="btn btn-sm btn-success">🆙 Copy All</button>
+                                <button id="save-id-cards" class="btn btn-sm btn-info">💾 Simpan ke Google Sheets</button>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th width="5%">BIL</th>
+                                        <th width="30%">ID CARD REGISTRATION</th>
+                                        <th width="65%">TINDAKAN</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="id-table-body">
+                                    <!-- ID cards will be populated here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="history-section">
+                        <h5>Sejarah ID Card</h5>
+                        <button id="load-id-history" class="btn btn-sm btn-secondary mb-2">Muat Sejarah</button>
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>BIL</th>
+                                        <th>ID CARD</th>
+                                        <th>TARIKH</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="id-history-body">
+                                    <!-- ID card history will be populated here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Ganti URL_DEPLOYMENT dengan URL deployment Google Apps Script Anda
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyUF3O4o4vcV4bF-UOCf4xCHibj84KpHqX20StdjVIJRm5xKDe2zIIzNyJ4p5SPYSY/exec'; // Ganti dengan URL deployment GAS Anda
+
+        // Show alert message
+        function showAlert(message, type) {
+            const alertDiv = document.getElementById('alert-message');
+            alertDiv.innerHTML = message;
+            alertDiv.className = `alert alert-${type} alert-message`;
+            alertDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                alertDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        // Authentication functionality
+        document.getElementById('show-signup').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('login-page').style.display = 'none';
+            document.getElementById('signup-page').style.display = 'block';
+        });
+
+        document.getElementById('show-login').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('signup-page').style.display = 'none';
+            document.getElementById('login-page').style.display = 'block';
+        });
+
+        document.getElementById('show-forgot').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('login-page').style.display = 'none';
+            document.getElementById('forgot-page').style.display = 'block';
+        });
+
+        document.getElementById('show-login-from-forgot').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('forgot-page').style.display = 'none';
+            document.getElementById('login-page').style.display = 'block';
+        });
+
+        // Login functionality
+        document.getElementById('login-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const loginBtn = document.getElementById('login-btn');
+            
+            if (!username || !password) {
+                showAlert('Sila isi semua maklumat log masuk', 'danger');
+                return;
+            }
+            
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'Sedang Log Masuk...';
+            
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `action=login&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`
+                });
+                
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    showAlert('Log masuk berjaya!', 'success');
+                    
+                    localStorage.setItem('username', username);
+                    localStorage.setItem('nama', result.nama);
+                    
+                    setTimeout(() => {
+                        document.getElementById('auth-pages').style.display = 'none';
+                        document.getElementById('main-page').style.display = 'block';
+                        document.getElementById('user-name').textContent = result.nama || username;
+                        
+                        // Load history
+                        loadUserHistory();
+                        loadIdHistory();
+                    }, 1000);
+                } else {
+                    showAlert(result.message, 'danger');
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                showAlert('Ralat semasa log masuk: ' + error.message, 'danger');
+            } finally {
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'Teruskan';
+            }
+        });
+
+        // Signup functionality
+        document.getElementById('signup-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('signup-username').value;
+            const password = document.getElementById('signup-password').value;
+            const security = document.getElementById('signup-security').value;
+            const dob = document.getElementById('signup-dob').value;
+            const signupBtn = document.getElementById('signup-btn');
+            
+            if (!username || !password || !security || !dob) {
+                showAlert('Sila isi semua maklumat pendaftaran', 'danger');
+                return;
+            }
+            
+            signupBtn.disabled = true;
+            signupBtn.textContent = 'Sedang Mendaftar...';
+            
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `action=signup&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}&security_questions=${encodeURIComponent(security)}&dob=${encodeURIComponent(dob)}`
+                });
+                
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    showAlert(result.message, 'success');
+                    
+                    setTimeout(() => {
+                        document.getElementById('signup-page').style.display = 'none';
+                        document.getElementById('login-page').style.display = 'block';
+                        document.getElementById('signup-form').reset();
+                    }, 2000);
+                } else {
+                    showAlert(result.message, 'danger');
+                }
+            } catch (error) {
+                console.error('Signup error:', error);
+                showAlert('Ralat semasa pendaftaran: ' + error.message, 'danger');
+            } finally {
+                signupBtn.disabled = false;
+                signupBtn.textContent = 'Daftar';
+            }
+        });
+
+        // Forgot password functionality
+        document.getElementById('forgot-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('forgot-username').value;
+            const security = document.getElementById('forgot-security').value;
+            const forgotBtn = document.getElementById('forgot-btn');
+            
+            if (!username || !security) {
+                showAlert('Sila isi semua maklumat', 'danger');
+                return;
+            }
+            
+            forgotBtn.disabled = true;
+            forgotBtn.textContent = 'Sedang Memproses...';
+            
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `action=forgot_password&username=${encodeURIComponent(username)}&security_questions=${encodeURIComponent(security)}`
+                });
+                
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    showAlert(result.message, 'success');
+                    
+                    setTimeout(() => {
+                        document.getElementById('forgot-page').style.display = 'none';
+                        document.getElementById('login-page').style.display = 'block';
+                        document.getElementById('forgot-form').reset();
+                    }, 2000);
+                } else {
+                    showAlert(result.message, 'danger');
+                }
+            } catch (error) {
+                console.error('Forgot password error:', error);
+                showAlert('Ralat: ' + error.message, 'danger');
+            } finally {
+                forgotBtn.disabled = false;
+                forgotBtn.textContent = 'Teruskan';
+            }
+        });
+        
+        // Logout functionality
+        document.getElementById('logout-btn').addEventListener('click', function() {
+            localStorage.removeItem('username');
+            localStorage.removeItem('nama');
+            document.getElementById('main-page').style.display = 'none';
+            document.getElementById('auth-pages').style.display = 'block';
+            document.getElementById('login-page').style.display = 'block';
+            document.getElementById('login-form').reset();
+            showAlert('Anda telah log keluar', 'info');
+        });
+        
+        // Check if user is already logged in
+        if (localStorage.getItem('username')) {
+            document.getElementById('auth-pages').style.display = 'none';
+            document.getElementById('main-page').style.display = 'block';
+            document.getElementById('user-name').textContent = localStorage.getItem('nama') || localStorage.getItem('username');
+            loadUserHistory();
+            loadIdHistory();
+        }
+        
+        // Generate random string
+        function generateRandomString(length, chars) {
+            let result = '';
+            for (let i = 0; i < length; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return result;
+        }
+        
+        // Generate user code
+        function generateUserCode() {
+            const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            const numbers = '0123456789';
+            
+            const firstPart = generateRandomString(3, letters);
+            const secondPart = generateRandomString(5, numbers);
+            
+            return firstPart + secondPart + 'R';
+        }
+        
+        // Generate ID card
+        function generateIdCard() {
+            const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            const numbers = '0123456789';
+            
+            const firstPart = generateRandomString(3, letters);
+            const secondPart = generateRandomString(5, numbers);
+            const thirdPart = generateRandomString(4, numbers);
+            
+            return firstPart + secondPart + 'RRMM' + thirdPart;
+        }
+        
+        // Generate user codes
+        document.getElementById('generate-user-btn').addEventListener('click', function() {
+            const count = parseInt(document.getElementById('user-count').value);
+            const tableBody = document.getElementById('user-table-body');
+            tableBody.innerHTML = '';
+            
+            for (let i = 1; i <= count; i++) {
+                const code = generateUserCode();
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${i}</td>
+                    <td class="code-text">${code}</td>
+                    <td>
+                        <span class="action-btn text-success" title="Copy Manual" onclick="copyToClipboard('${code}')">🆒</span>
+                        <span class="action-btn text-primary" title="Jana Sekali Lagi" onclick="regenerateUserCode(this)">🔄</span>
+                        <span class="action-btn text-info" title="Ikut Format Tersendiri Huruf Abc" onclick="customFormatUser(this)">🔠</span>
+                        <span class="action-btn text-danger" title="Padam" onclick="deleteRow(this)">❎</span>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            }
+            
+            showAlert(`${count} kode user telah dijana`, 'success');
+        });
+        
+        // Generate ID cards
+        document.getElementById('generate-id-btn').addEventListener('click', function() {
+            const count = parseInt(document.getElementById('id-count').value);
+            const tableBody = document.getElementById('id-table-body');
+            tableBody.innerHTML = '';
+            
+            for (let i = 1; i <= count; i++) {
+                const code = generateIdCard();
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${i}</td>
+                    <td class="code-text">${code}</td>
+                    <td>
+                        <span class="action-btn text-success" title="Copy Manual" onclick="copyToClipboard('${code}')">🆒</span>
+                        <span class="action-btn text-primary" title="Jana Sekali Lagi" onclick="regenerateIdCard(this)">🔄</span>
+                        <span class="action-btn text-info" title="Ikut Format Tersendiri Huruf Abc" onclick="customFormatId(this)">🔠</span>
+                        <span class="action-btn text-danger" title="Padam" onclick="deleteRow(this)">❎</span>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            }
+            
+            showAlert(`${count} ID card telah dijana`, 'success');
+        });
+        
+        // Save user codes to Google Sheets
+        document.getElementById('save-user-codes').addEventListener('click', async function() {
+            const codes = Array.from(document.querySelectorAll('#user-table-body .code-text'))
+                .map(el => el.textContent);
+            
+            if (codes.length === 0) {
+                showAlert('Tiada kode user untuk disimpan!', 'warning');
+                return;
+            }
+            
+            const username = localStorage.getItem('username');
+            const jumlah = document.getElementById('user-count').value;
+            
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `action=save_user_codes&username=${encodeURIComponent(username)}&codes=${encodeURIComponent(JSON.stringify(codes))}&jumlah=${encodeURIComponent(jumlah)}`
+                });
+                
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    showAlert('Kode user berjaya disimpan ke Google Sheets!', 'success');
+                    loadUserHistory();
+                } else {
+                    showAlert('Ralat semasa menyimpan: ' + result.message, 'danger');
+                }
+            } catch (error) {
+                console.error('Save error:', error);
+                showAlert('Ralat semasa menyimpan: ' + error.message, 'danger');
+            }
+        });
+        
+        // Save ID cards to Google Sheets
+        document.getElementById('save-id-cards').addEventListener('click', async function() {
+            const cards = Array.from(document.querySelectorAll('#id-table-body .code-text'))
+                .map(el => el.textContent);
+            
+            if (cards.length === 0) {
+                showAlert('Tiada ID card untuk disimpan!', 'warning');
+                return;
+            }
+            
+            const username = localStorage.getItem('username');
+            const jumlah = document.getElementById('id-count').value;
+            
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `action=save_id_cards&username=${encodeURIComponent(username)}&cards=${encodeURIComponent(JSON.stringify(cards))}&jumlah=${encodeURIComponent(jumlah)}`
+                });
+                
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    showAlert('ID Card berjaya disimpan ke Google Sheets!', 'success');
+                    loadIdHistory();
+                } else {
+                    showAlert('Ralat semasa menyimpan: ' + result.message, 'danger');
+                }
+            } catch (error) {
+                console.error('Save error:', error);
+                showAlert('Ralat semasa menyimpan: ' + error.message, 'danger');
+            }
+        });
+        
+        // Load user history
+        async function loadUserHistory() {
+            const username = localStorage.getItem('username');
+            
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `action=get_user_codes&username=${encodeURIComponent(username)}`
+                });
+                
+                const result = await response.json();
+                const tableBody = document.getElementById('user-history-body');
+                tableBody.innerHTML = '';
+                
+                if (result.status === 'success' && result.data.length > 0) {
+                    result.data.forEach((item, index) => {
+                        const row = document.createElement('tr');
+                        const date = new Date(item.date);
+                        row.innerHTML = `
+                            <td>${index + 1}</td>
+                            <td>${item.code}</td>
+                            <td>${date.toLocaleDateString('ms-MY')} ${date.toLocaleTimeString('ms-MY')}</td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                    showAlert('Sejarah kode user dimuatkan', 'success');
+                } else {
+                    tableBody.innerHTML = '<tr><td colspan="3" class="text-center">Tiada sejarah kode user</td></tr>';
+                }
+            } catch (error) {
+                console.error('Load history error:', error);
+                showAlert('Ralat semasa memuat sejarah: ' + error.message, 'danger');
+            }
+        }
+        
+        // Load ID card history
+        async function loadIdHistory() {
+            const username = localStorage.getItem('username');
+            
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `action=get_id_cards&username=${encodeURIComponent(username)}`
+                });
+                
+                const result = await response.json();
+                const tableBody = document.getElementById('id-history-body');
+                tableBody.innerHTML = '';
+                
+                if (result.status === 'success' && result.data.length > 0) {
+                    result.data.forEach((item, index) => {
+                        const row = document.createElement('tr');
+                        const date = new Date(item.date);
+                        row.innerHTML = `
+                            <td>${index + 1}</td>
+                            <td>${item.code}</td>
+                            <td>${date.toLocaleDateString('ms-MY')} ${date.toLocaleTimeString('ms-MY')}</td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                    showAlert('Sejarah ID card dimuatkan', 'success');
+                } else {
+                    tableBody.innerHTML = '<tr><td colspan="3" class="text-center">Tiada sejarah ID card</td></tr>';
+                }
+            } catch (error) {
+                console.error('Load history error:', error);
+                showAlert('Ralat semasa memuat sejarah: ' + error.message, 'danger');
+            }
+        }
+        
+        // Manual load history buttons
+        document.getElementById('load-user-history').addEventListener('click', loadUserHistory);
+        document.getElementById('load-id-history').addEventListener('click', loadIdHistory);
+        
+        // Copy all user codes
+        document.getElementById('copy-all-user').addEventListener('click', function() {
+            const codes = Array.from(document.querySelectorAll('#user-table-body .code-text'))
+                .map(el => el.textContent)
+                .join('\n');
+            
+            if (codes) {
+                copyToClipboard(codes);
+                showAlert('Semua kode user telah disalin!', 'success');
+            } else {
+                showAlert('Tiada kode user untuk disalin!', 'warning');
+            }
+        });
+        
+        // Copy all ID cards
+        document.getElementById('copy-all-id').addEventListener('click', function() {
+            const codes = Array.from(document.querySelectorAll('#id-table-body .code-text'))
+                .map(el => el.textContent)
+                .join('\n');
+            
+            if (codes) {
+                copyToClipboard(codes);
+                showAlert('Semua ID card telah disalin!', 'success');
+            } else {
+                showAlert('Tiada ID card untuk disalin!', 'warning');
+            }
+        });
+        
+        // Utility functions
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(function() {
+                console.log('Teks disalin: ' + text);
+            }, function(err) {
+                console.error('Gagal menyalin teks: ', err);
+                // Fallback untuk browser lama
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+            });
+        }
+        
+        function regenerateUserCode(element) {
+            const row = element.closest('tr');
+            const codeCell = row.querySelector('.code-text');
+            codeCell.textContent = generateUserCode();
+            showAlert('Kode user dijana semula', 'info');
+        }
+        
+        function regenerateIdCard(element) {
+            const row = element.closest('tr');
+            const codeCell = row.querySelector('.code-text');
+            codeCell.textContent = generateIdCard();
+            showAlert('ID card dijana semula', 'info');
+        }
+        
+        function customFormatUser(element) {
+            const customFormat = prompt('Masukkan format tersendiri (contoh: ABC12345R):');
+            if (customFormat) {
+                const row = element.closest('tr');
+                const codeCell = row.querySelector('.code-text');
+                codeCell.textContent = customFormat;
+                showAlert('Format kustom diterapkan', 'info');
+            }
+        }
+        
+        function customFormatId(element) {
+            const customFormat = prompt('Masukkan format tersendiri (contoh: ABC12345RRMM6789):');
+            if (customFormat) {
+                const row = element.closest('tr');
+                const codeCell = row.querySelector('.code-text');
+                codeCell.textContent = customFormat;
+                showAlert('Format kustom diterapkan', 'info');
+            }
+        }
+        
+        function deleteRow(element) {
+            if (confirm('Adakah anda pasti ingin memadam baris ini?')) {
+                const row = element.closest('tr');
+                row.remove();
+                
+                // Update row numbers
+                const table = row.closest('tbody');
+                const rows = table.querySelectorAll('tr');
+                rows.forEach((row, index) => {
+                    row.cells[0].textContent = index + 1;
+                });
+                
+                showAlert('Baris dipadam', 'info');
+            }
+        }
+    </script>
+</body>
+</html>
