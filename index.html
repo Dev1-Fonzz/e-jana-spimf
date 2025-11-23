@@ -7,61 +7,68 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
-            background-color: #f8f9fa;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         .auth-container {
-            max-width: 400px;
-            margin: 100px auto;
-            padding: 30px;
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            max-width: 450px;
+            margin: 50px auto;
+            padding: 40px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
         }
         .main-container {
             max-width: 1200px;
             margin: 20px auto;
             padding: 20px;
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
         }
         .nav-tabs .nav-link.active {
-            background-color: #0d6efd;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             font-weight: bold;
+            border: none;
         }
-        .code-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px;
-            border-bottom: 1px solid #eee;
+        .nav-tabs .nav-link {
+            color: #667eea;
+            font-weight: 500;
         }
         .code-text {
-            font-family: monospace;
+            font-family: 'Courier New', monospace;
             font-size: 1.1rem;
+            font-weight: bold;
+            color: #2c3e50;
         }
         .action-btn {
-            margin: 0 2px;
+            margin: 0 3px;
             cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .action-btn:hover {
+            transform: scale(1.1);
         }
         .table th {
-            background-color: #0d6efd;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
+            border: none;
         }
         .header {
-            background-color: #0d6efd;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 15px;
-            border-radius: 10px 10px 0 0;
+            padding: 20px;
+            border-radius: 15px 15px 0 0;
             margin-bottom: 20px;
         }
         .history-section {
             margin-top: 30px;
-            padding: 15px;
-            border: 1px solid #dee2e6;
-            border-radius: 5px;
+            padding: 20px;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            background: #f8f9fa;
         }
         .alert-message {
             position: fixed;
@@ -69,6 +76,28 @@
             right: 20px;
             z-index: 1000;
             min-width: 300px;
+            border-radius: 10px;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 8px;
+            padding: 10px 25px;
+            font-weight: 600;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        .form-control {
+            border-radius: 8px;
+            border: 2px solid #e9ecef;
+            padding: 12px 15px;
+            transition: all 0.3s ease;
+        }
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
         }
     </style>
 </head>
@@ -80,72 +109,105 @@
     <div id="auth-pages">
         <!-- Login Page -->
         <div id="login-page" class="auth-container">
-            <h2 class="text-center mb-4">Log Masuk Sistem E-Jana SPIMF</h2>
+            <div class="text-center mb-4">
+                <h2 class="fw-bold" style="color: #667eea;">Log Masuk SPIMF</h2>
+                <p class="text-muted">Sila log masuk ke akaun anda</p>
+            </div>
             <form id="login-form">
                 <div class="mb-3">
-                    <label for="username" class="form-label">Nama Pengguna</label>
-                    <input type="text" class="form-control" id="username" required>
+                    <label for="username" class="form-label fw-semibold">Nama Pengguna</label>
+                    <input type="text" class="form-control" id="username" placeholder="Masukkan nama pengguna" required>
                 </div>
                 <div class="mb-3">
-                    <label for="password" class="form-label">Kata Laluan</label>
-                    <input type="password" class="form-control" id="password" required>
+                    <label for="password" class="form-label fw-semibold">Kata Laluan</label>
+                    <input type="password" class="form-control" id="password" placeholder="Masukkan kata laluan" required>
                 </div>
                 <div class="d-grid">
-                    <button type="submit" class="btn btn-primary" id="login-btn">Teruskan</button>
+                    <button type="submit" class="btn btn-primary" id="login-btn">
+                        <span class="login-text">Teruskan</span>
+                        <span class="loading-text" style="display: none;">
+                            <span class="spinner-border spinner-border-sm" role="status"></span>
+                            Sedang Log Masuk...
+                        </span>
+                    </button>
                 </div>
                 <div class="mt-3 text-center">
-                    <a href="#" id="show-signup">Daftar Akaun Baru</a> | 
-                    <a href="#" id="show-forgot">Lupa Kata Laluan?</a>
+                    <a href="#" id="show-signup" class="text-decoration-none">Daftar Akaun Baru</a> | 
+                    <a href="#" id="show-forgot" class="text-decoration-none">Lupa Kata Laluan?</a>
                 </div>
             </form>
         </div>
 
         <!-- Sign Up Page -->
         <div id="signup-page" class="auth-container" style="display: none;">
-            <h2 class="text-center mb-4">Daftar Akaun Baru</h2>
+            <div class="text-center mb-4">
+                <h2 class="fw-bold" style="color: #667eea;">Daftar Akaun Baru</h2>
+                <p class="text-muted">Buat akaun baru untuk akses sistem</p>
+            </div>
             <form id="signup-form">
                 <div class="mb-3">
-                    <label for="signup-username" class="form-label">Nama Pengguna</label>
-                    <input type="text" class="form-control" id="signup-username" required>
+                    <label for="signup-username" class="form-label fw-semibold">Nama Pengguna</label>
+                    <input type="text" class="form-control" id="signup-username" placeholder="Pilih nama pengguna" required>
                 </div>
                 <div class="mb-3">
-                    <label for="signup-password" class="form-label">Kata Laluan</label>
-                    <input type="password" class="form-control" id="signup-password" required>
+                    <label for="signup-password" class="form-label fw-semibold">Kata Laluan</label>
+                    <input type="password" class="form-control" id="signup-password" placeholder="Buat kata laluan" required>
                 </div>
                 <div class="mb-3">
-                    <label for="signup-security" class="form-label">Soalan Keselamatan</label>
-                    <input type="text" class="form-control" id="signup-security" required>
+                    <label for="signup-security" class="form-label fw-semibold">Soalan Keselamatan</label>
+                    <select class="form-control" id="signup-security" required>
+                        <option value="">Pilih soalan keselamatan</option>
+                        <option value="Apa nama haiwan kesayangan anda?">Apa nama haiwan kesayangan anda?</option>
+                        <option value="Apa nama sekolah rendah anda?">Apa nama sekolah rendah anda?</option>
+                        <option value="Apa bandar kelahiran anda?">Apa bandar kelahiran anda?</option>
+                        <option value="Apa nama ibu kandung anda?">Apa nama ibu kandung anda?</option>
+                    </select>
                 </div>
                 <div class="mb-3">
-                    <label for="signup-dob" class="form-label">Tarikh Lahir</label>
+                    <label for="signup-dob" class="form-label fw-semibold">Tarikh Lahir</label>
                     <input type="date" class="form-control" id="signup-dob" required>
                 </div>
                 <div class="d-grid">
-                    <button type="submit" class="btn btn-primary" id="signup-btn">Daftar</button>
+                    <button type="submit" class="btn btn-primary" id="signup-btn">
+                        <span class="signup-text">Daftar</span>
+                        <span class="loading-text" style="display: none;">
+                            <span class="spinner-border spinner-border-sm" role="status"></span>
+                            Sedang Mendaftar...
+                        </span>
+                    </button>
                 </div>
                 <div class="mt-3 text-center">
-                    <a href="#" id="show-login">Kembali ke Log Masuk</a>
+                    <a href="#" id="show-login" class="text-decoration-none">Kembali ke Log Masuk</a>
                 </div>
             </form>
         </div>
 
         <!-- Forgot Password Page -->
         <div id="forgot-page" class="auth-container" style="display: none;">
-            <h2 class="text-center mb-4">Lupa Kata Laluan</h2>
+            <div class="text-center mb-4">
+                <h2 class="fw-bold" style="color: #667eea;">Lupa Kata Laluan</h2>
+                <p class="text-muted">Sila jawab soalan keselamatan anda</p>
+            </div>
             <form id="forgot-form">
                 <div class="mb-3">
-                    <label for="forgot-username" class="form-label">Nama Pengguna</label>
-                    <input type="text" class="form-control" id="forgot-username" required>
+                    <label for="forgot-username" class="form-label fw-semibold">Nama Pengguna</label>
+                    <input type="text" class="form-control" id="forgot-username" placeholder="Masukkan nama pengguna" required>
                 </div>
                 <div class="mb-3">
-                    <label for="forgot-security" class="form-label">Soalan Keselamatan</label>
-                    <input type="text" class="form-control" id="forgot-security" required>
+                    <label for="forgot-security" class="form-label fw-semibold">Soalan Keselamatan</label>
+                    <input type="text" class="form-control" id="forgot-security" placeholder="Jawab soalan keselamatan anda" required>
                 </div>
                 <div class="d-grid">
-                    <button type="submit" class="btn btn-primary" id="forgot-btn">Teruskan</button>
+                    <button type="submit" class="btn btn-primary" id="forgot-btn">
+                        <span class="forgot-text">Teruskan</span>
+                        <span class="loading-text" style="display: none;">
+                            <span class="spinner-border spinner-border-sm" role="status"></span>
+                            Sedang Memproses...
+                        </span>
+                    </button>
                 </div>
                 <div class="mt-3 text-center">
-                    <a href="#" id="show-login-from-forgot">Kembali ke Log Masuk</a>
+                    <a href="#" id="show-login-from-forgot" class="text-decoration-none">Kembali ke Log Masuk</a>
                 </div>
             </form>
         </div>
@@ -155,9 +217,13 @@
     <div id="main-page" class="main-container" style="display: none;">
         <div class="header">
             <div class="d-flex justify-content-between align-items-center">
-                <h2>Sistem E-Jana SPIMF</h2>
                 <div>
-                    <span id="user-name">Admin</span>
+                    <h2 class="mb-1">Sistem E-Jana SPIMF</h2>
+                    <p class="mb-0">Sistem Penjanaan Kod Pengguna & ID Card</p>
+                </div>
+                <div class="text-end">
+                    <div class="fw-semibold" id="user-name">Admin</div>
+                    <small class="opacity-75">Sedang aktif</small>
                     <button id="logout-btn" class="btn btn-light btn-sm ms-2">Log Keluar</button>
                 </div>
             </div>
@@ -165,10 +231,14 @@
 
         <ul class="nav nav-tabs" id="myTab" role="tablist">
             <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="user-code-tab" data-bs-toggle="tab" data-bs-target="#user-code" type="button" role="tab">E-Jana Kode User</button>
+                <button class="nav-link active" id="user-code-tab" data-bs-toggle="tab" data-bs-target="#user-code" type="button" role="tab">
+                    📝 E-Jana Kode User
+                </button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link" id="id-card-tab" data-bs-toggle="tab" data-bs-target="#id-card" type="button" role="tab">E-Jana ID Card Registration</button>
+                <button class="nav-link" id="id-card-tab" data-bs-toggle="tab" data-bs-target="#id-card" type="button" role="tab">
+                    🪪 E-Jana ID Card
+                </button>
             </li>
         </ul>
 
@@ -176,55 +246,65 @@
             <!-- User Code Tab -->
             <div class="tab-pane fade show active" id="user-code" role="tabpanel">
                 <div class="mt-4">
-                    <h4>E-Jana Kode User Spimf</h4>
-                    <div class="row mb-3">
+                    <h4 class="fw-bold text-primary">E-Jana Kode User Spimf</h4>
+                    <div class="row mb-4">
                         <div class="col-md-4">
-                            <label for="user-count" class="form-label">Jumlah Kode User yang Dijana:</label>
-                            <input type="number" class="form-control" id="user-count" min="1" value="5">
+                            <label for="user-count" class="form-label fw-semibold">Jumlah Kode User:</label>
+                            <input type="number" class="form-control" id="user-count" min="1" max="100" value="5">
                         </div>
                         <div class="col-md-4 d-flex align-items-end">
-                            <button id="generate-user-btn" class="btn btn-primary">Jana Kode User</button>
+                            <button id="generate-user-btn" class="btn btn-primary w-100">
+                                🎲 Jana Kode User
+                            </button>
                         </div>
                     </div>
                     
                     <div id="user-results" class="mt-4">
-                        <div class="d-flex justify-content-between mb-2">
-                            <h5>Senarai Kode User</h5>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="fw-bold">Senarai Kode User</h5>
                             <div>
-                                <button id="copy-all-user" class="btn btn-sm btn-success">🆙 Copy All</button>
-                                <button id="save-user-codes" class="btn btn-sm btn-info">💾 Simpan ke Google Sheets</button>
+                                <button id="copy-all-user" class="btn btn-success btn-sm">🆙 Salin Semua</button>
+                                <button id="save-user-codes" class="btn btn-info btn-sm">💾 Simpan ke Sheet</button>
                             </div>
                         </div>
                         <div class="table-responsive">
-                            <table class="table table-striped">
+                            <table class="table table-hover">
                                 <thead>
                                     <tr>
-                                        <th width="5%">BIL</th>
-                                        <th width="30%">KODE USER</th>
-                                        <th width="65%">TINDAKAN</th>
+                                        <th width="8%" class="text-center">BIL</th>
+                                        <th width="35%">KODE USER</th>
+                                        <th width="57%">TINDAKAN</th>
                                     </tr>
                                 </thead>
                                 <tbody id="user-table-body">
-                                    <!-- User codes will be populated here -->
+                                    <tr>
+                                        <td colspan="3" class="text-center text-muted py-4">
+                                            Tiada kode user dijana. Klik "Jana Kode User" untuk mula.
+                                        </td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
                     </div>
 
                     <div class="history-section">
-                        <h5>Sejarah Kode User</h5>
-                        <button id="load-user-history" class="btn btn-sm btn-secondary mb-2">Muat Sejarah</button>
+                        <h5 class="fw-bold">📚 Sejarah Kode User</h5>
+                        <button id="load-user-history" class="btn btn-secondary btn-sm mb-3">🔄 Muat Sejarah</button>
                         <div class="table-responsive">
-                            <table class="table table-sm">
+                            <table class="table table-sm table-borderless">
                                 <thead>
                                     <tr>
-                                        <th>BIL</th>
-                                        <th>KODE USER</th>
-                                        <th>TARIKH</th>
+                                        <th width="10%">BIL</th>
+                                        <th width="45%">KODE USER</th>
+                                        <th width="45%">TARIKH</th>
                                     </tr>
                                 </thead>
                                 <tbody id="user-history-body">
-                                    <!-- User history will be populated here -->
+                                    <tr>
+                                        <td colspan="3" class="text-center text-muted py-3">
+                                            Tiada sejarah kode user
+                                        </td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -235,55 +315,65 @@
             <!-- ID Card Tab -->
             <div class="tab-pane fade" id="id-card" role="tabpanel">
                 <div class="mt-4">
-                    <h4>E-Jana ID Card Registration</h4>
-                    <div class="row mb-3">
+                    <h4 class="fw-bold text-primary">E-Jana ID Card Registration</h4>
+                    <div class="row mb-4">
                         <div class="col-md-4">
-                            <label for="id-count" class="form-label">Jumlah ID Card yang Dijana:</label>
-                            <input type="number" class="form-control" id="id-count" min="1" value="5">
+                            <label for="id-count" class="form-label fw-semibold">Jumlah ID Card:</label>
+                            <input type="number" class="form-control" id="id-count" min="1" max="100" value="5">
                         </div>
                         <div class="col-md-4 d-flex align-items-end">
-                            <button id="generate-id-btn" class="btn btn-primary">Jana ID Card</button>
+                            <button id="generate-id-btn" class="btn btn-primary w-100">
+                                🎲 Jana ID Card
+                            </button>
                         </div>
                     </div>
                     
                     <div id="id-results" class="mt-4">
-                        <div class="d-flex justify-content-between mb-2">
-                            <h5>Senarai ID Card Registration</h5>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="fw-bold">Senarai ID Card Registration</h5>
                             <div>
-                                <button id="copy-all-id" class="btn btn-sm btn-success">🆙 Copy All</button>
-                                <button id="save-id-cards" class="btn btn-sm btn-info">💾 Simpan ke Google Sheets</button>
+                                <button id="copy-all-id" class="btn btn-success btn-sm">🆙 Salin Semua</button>
+                                <button id="save-id-cards" class="btn btn-info btn-sm">💾 Simpan ke Sheet</button>
                             </div>
                         </div>
                         <div class="table-responsive">
-                            <table class="table table-striped">
+                            <table class="table table-hover">
                                 <thead>
                                     <tr>
-                                        <th width="5%">BIL</th>
-                                        <th width="30%">ID CARD REGISTRATION</th>
-                                        <th width="65%">TINDAKAN</th>
+                                        <th width="8%" class="text-center">BIL</th>
+                                        <th width="35%">ID CARD REGISTRATION</th>
+                                        <th width="57%">TINDAKAN</th>
                                     </tr>
                                 </thead>
                                 <tbody id="id-table-body">
-                                    <!-- ID cards will be populated here -->
+                                    <tr>
+                                        <td colspan="3" class="text-center text-muted py-4">
+                                            Tiada ID card dijana. Klik "Jana ID Card" untuk mula.
+                                        </td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
                     </div>
 
                     <div class="history-section">
-                        <h5>Sejarah ID Card</h5>
-                        <button id="load-id-history" class="btn btn-sm btn-secondary mb-2">Muat Sejarah</button>
+                        <h5 class="fw-bold">📚 Sejarah ID Card</h5>
+                        <button id="load-id-history" class="btn btn-secondary btn-sm mb-3">🔄 Muat Sejarah</button>
                         <div class="table-responsive">
-                            <table class="table table-sm">
+                            <table class="table table-sm table-borderless">
                                 <thead>
                                     <tr>
-                                        <th>BIL</th>
-                                        <th>ID CARD</th>
-                                        <th>TARIKH</th>
+                                        <th width="10%">BIL</th>
+                                        <th width="45%">ID CARD</th>
+                                        <th width="45%">TARIKH</th>
                                     </tr>
                                 </thead>
                                 <tbody id="id-history-body">
-                                    <!-- ID card history will be populated here -->
+                                    <tr>
+                                        <td colspan="3" class="text-center text-muted py-3">
+                                            Tiada sejarah ID card
+                                        </td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -295,19 +385,39 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Ganti URL_DEPLOYMENT dengan URL deployment Google Apps Script Anda
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyUF3O4o4vcV4bF-UOCf4xCHibj84KpHqX20StdjVIJRm5xKDe2zIIzNyJ4p5SPYSY/exec'; // Ganti dengan URL deployment GAS Anda
+        // GANTI URL INI DENGAN URL DEPLOYMENT ANDA
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyUF3O4o4vcV4bF-UOCf4xCHibj84KpHqX20StdjVIJRm5xKDe2zIIzNyJ4p5SPYSY/exec';
 
         // Show alert message
         function showAlert(message, type) {
             const alertDiv = document.getElementById('alert-message');
-            alertDiv.innerHTML = message;
-            alertDiv.className = `alert alert-${type} alert-message`;
+            alertDiv.innerHTML = `
+                <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
             alertDiv.style.display = 'block';
             
             setTimeout(() => {
                 alertDiv.style.display = 'none';
             }, 5000);
+        }
+
+        // Toggle loading state
+        function toggleLoading(button, isLoading) {
+            const textSpan = button.querySelector('.login-text, .signup-text, .forgot-text');
+            const loadingSpan = button.querySelector('.loading-text');
+            
+            if (isLoading) {
+                textSpan.style.display = 'none';
+                loadingSpan.style.display = 'inline';
+                button.disabled = true;
+            } else {
+                textSpan.style.display = 'inline';
+                loadingSpan.style.display = 'none';
+                button.disabled = false;
+            }
         }
 
         // Authentication functionality
@@ -339,19 +449,19 @@
         document.getElementById('login-form').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            const username = document.getElementById('username').value;
+            const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value;
             const loginBtn = document.getElementById('login-btn');
             
             if (!username || !password) {
-                showAlert('Sila isi semua maklumat log masuk', 'danger');
+                showAlert('Sila isi semua maklumat log masuk', 'warning');
                 return;
             }
             
-            loginBtn.disabled = true;
-            loginBtn.textContent = 'Sedang Log Masuk...';
+            toggleLoading(loginBtn, true);
             
             try {
+                console.log('Attempting login for:', username);
                 const response = await fetch(SCRIPT_URL, {
                     method: 'POST',
                     headers: {
@@ -361,9 +471,10 @@
                 });
                 
                 const result = await response.json();
+                console.log('Login response:', result);
                 
                 if (result.status === 'success') {
-                    showAlert('Log masuk berjaya!', 'success');
+                    showAlert('✅ Log masuk berjaya!', 'success');
                     
                     localStorage.setItem('username', username);
                     localStorage.setItem('nama', result.nama);
@@ -373,19 +484,17 @@
                         document.getElementById('main-page').style.display = 'block';
                         document.getElementById('user-name').textContent = result.nama || username;
                         
-                        // Load history
                         loadUserHistory();
                         loadIdHistory();
                     }, 1000);
                 } else {
-                    showAlert(result.message, 'danger');
+                    showAlert('❌ ' + result.message, 'danger');
                 }
             } catch (error) {
                 console.error('Login error:', error);
-                showAlert('Ralat semasa log masuk: ' + error.message, 'danger');
+                showAlert('❌ Ralat semasa log masuk: ' + error.message, 'danger');
             } finally {
-                loginBtn.disabled = false;
-                loginBtn.textContent = 'Teruskan';
+                toggleLoading(loginBtn, false);
             }
         });
 
@@ -393,19 +502,18 @@
         document.getElementById('signup-form').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            const username = document.getElementById('signup-username').value;
+            const username = document.getElementById('signup-username').value.trim();
             const password = document.getElementById('signup-password').value;
             const security = document.getElementById('signup-security').value;
             const dob = document.getElementById('signup-dob').value;
             const signupBtn = document.getElementById('signup-btn');
             
             if (!username || !password || !security || !dob) {
-                showAlert('Sila isi semua maklumat pendaftaran', 'danger');
+                showAlert('Sila isi semua maklumat pendaftaran', 'warning');
                 return;
             }
             
-            signupBtn.disabled = true;
-            signupBtn.textContent = 'Sedang Mendaftar...';
+            toggleLoading(signupBtn, true);
             
             try {
                 const response = await fetch(SCRIPT_URL, {
@@ -419,7 +527,7 @@
                 const result = await response.json();
                 
                 if (result.status === 'success') {
-                    showAlert(result.message, 'success');
+                    showAlert('✅ ' + result.message, 'success');
                     
                     setTimeout(() => {
                         document.getElementById('signup-page').style.display = 'none';
@@ -427,14 +535,13 @@
                         document.getElementById('signup-form').reset();
                     }, 2000);
                 } else {
-                    showAlert(result.message, 'danger');
+                    showAlert('❌ ' + result.message, 'danger');
                 }
             } catch (error) {
                 console.error('Signup error:', error);
-                showAlert('Ralat semasa pendaftaran: ' + error.message, 'danger');
+                showAlert('❌ Ralat semasa pendaftaran: ' + error.message, 'danger');
             } finally {
-                signupBtn.disabled = false;
-                signupBtn.textContent = 'Daftar';
+                toggleLoading(signupBtn, false);
             }
         });
 
@@ -442,17 +549,16 @@
         document.getElementById('forgot-form').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            const username = document.getElementById('forgot-username').value;
+            const username = document.getElementById('forgot-username').value.trim();
             const security = document.getElementById('forgot-security').value;
             const forgotBtn = document.getElementById('forgot-btn');
             
             if (!username || !security) {
-                showAlert('Sila isi semua maklumat', 'danger');
+                showAlert('Sila isi semua maklumat', 'warning');
                 return;
             }
             
-            forgotBtn.disabled = true;
-            forgotBtn.textContent = 'Sedang Memproses...';
+            toggleLoading(forgotBtn, true);
             
             try {
                 const response = await fetch(SCRIPT_URL, {
@@ -466,7 +572,7 @@
                 const result = await response.json();
                 
                 if (result.status === 'success') {
-                    showAlert(result.message, 'success');
+                    showAlert('✅ ' + result.message, 'success');
                     
                     setTimeout(() => {
                         document.getElementById('forgot-page').style.display = 'none';
@@ -474,26 +580,27 @@
                         document.getElementById('forgot-form').reset();
                     }, 2000);
                 } else {
-                    showAlert(result.message, 'danger');
+                    showAlert('❌ ' + result.message, 'danger');
                 }
             } catch (error) {
                 console.error('Forgot password error:', error);
-                showAlert('Ralat: ' + error.message, 'danger');
+                showAlert('❌ Ralat: ' + error.message, 'danger');
             } finally {
-                forgotBtn.disabled = false;
-                forgotBtn.textContent = 'Teruskan';
+                toggleLoading(forgotBtn, false);
             }
         });
         
         // Logout functionality
         document.getElementById('logout-btn').addEventListener('click', function() {
-            localStorage.removeItem('username');
-            localStorage.removeItem('nama');
-            document.getElementById('main-page').style.display = 'none';
-            document.getElementById('auth-pages').style.display = 'block';
-            document.getElementById('login-page').style.display = 'block';
-            document.getElementById('login-form').reset();
-            showAlert('Anda telah log keluar', 'info');
+            if (confirm('Adakah anda pasti ingin log keluar?')) {
+                localStorage.removeItem('username');
+                localStorage.removeItem('nama');
+                document.getElementById('main-page').style.display = 'none';
+                document.getElementById('auth-pages').style.display = 'block';
+                document.getElementById('login-page').style.display = 'block';
+                document.getElementById('login-form').reset();
+                showAlert('👋 Anda telah log keluar', 'info');
+            }
         });
         
         // Check if user is already logged in
@@ -514,7 +621,7 @@
             return result;
         }
         
-        // Generate user code
+        // Generate user code (3 huruf + 5 angka + R)
         function generateUserCode() {
             const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
             const numbers = '0123456789';
@@ -525,7 +632,7 @@
             return firstPart + secondPart + 'R';
         }
         
-        // Generate ID card
+        // Generate ID card (3 huruf + 5 angka + RRMM + 4 angka)
         function generateIdCard() {
             const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
             const numbers = '0123456789';
@@ -541,50 +648,66 @@
         document.getElementById('generate-user-btn').addEventListener('click', function() {
             const count = parseInt(document.getElementById('user-count').value);
             const tableBody = document.getElementById('user-table-body');
+            
+            if (count < 1 || count > 100) {
+                showAlert('Sila masukkan jumlah antara 1 hingga 100', 'warning');
+                return;
+            }
+            
             tableBody.innerHTML = '';
             
             for (let i = 1; i <= count; i++) {
                 const code = generateUserCode();
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td>${i}</td>
-                    <td class="code-text">${code}</td>
+                    <td class="text-center fw-bold">${i}</td>
                     <td>
-                        <span class="action-btn text-success" title="Copy Manual" onclick="copyToClipboard('${code}')">🆒</span>
-                        <span class="action-btn text-primary" title="Jana Sekali Lagi" onclick="regenerateUserCode(this)">🔄</span>
-                        <span class="action-btn text-info" title="Ikut Format Tersendiri Huruf Abc" onclick="customFormatUser(this)">🔠</span>
-                        <span class="action-btn text-danger" title="Padam" onclick="deleteRow(this)">❎</span>
+                        <span class="code-text">${code}</span>
+                    </td>
+                    <td>
+                        <button class="btn btn-success btn-sm action-btn" onclick="copyToClipboard('${code}')" title="Salin Kode">🆒 Copy</button>
+                        <button class="btn btn-primary btn-sm action-btn" onclick="regenerateUserCode(this)" title="Jana Semula">🔄</button>
+                        <button class="btn btn-info btn-sm action-btn" onclick="customFormatUser(this)" title="Format Tersendiri">🔠</button>
+                        <button class="btn btn-danger btn-sm action-btn" onclick="deleteRow(this)" title="Padam">❎</button>
                     </td>
                 `;
                 tableBody.appendChild(row);
             }
             
-            showAlert(`${count} kode user telah dijana`, 'success');
+            showAlert(`✅ ${count} kode user telah dijana`, 'success');
         });
         
         // Generate ID cards
         document.getElementById('generate-id-btn').addEventListener('click', function() {
             const count = parseInt(document.getElementById('id-count').value);
             const tableBody = document.getElementById('id-table-body');
+            
+            if (count < 1 || count > 100) {
+                showAlert('Sila masukkan jumlah antara 1 hingga 100', 'warning');
+                return;
+            }
+            
             tableBody.innerHTML = '';
             
             for (let i = 1; i <= count; i++) {
                 const code = generateIdCard();
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td>${i}</td>
-                    <td class="code-text">${code}</td>
+                    <td class="text-center fw-bold">${i}</td>
                     <td>
-                        <span class="action-btn text-success" title="Copy Manual" onclick="copyToClipboard('${code}')">🆒</span>
-                        <span class="action-btn text-primary" title="Jana Sekali Lagi" onclick="regenerateIdCard(this)">🔄</span>
-                        <span class="action-btn text-info" title="Ikut Format Tersendiri Huruf Abc" onclick="customFormatId(this)">🔠</span>
-                        <span class="action-btn text-danger" title="Padam" onclick="deleteRow(this)">❎</span>
+                        <span class="code-text">${code}</span>
+                    </td>
+                    <td>
+                        <button class="btn btn-success btn-sm action-btn" onclick="copyToClipboard('${code}')" title="Salin Kode">🆒 Copy</button>
+                        <button class="btn btn-primary btn-sm action-btn" onclick="regenerateIdCard(this)" title="Jana Semula">🔄</button>
+                        <button class="btn btn-info btn-sm action-btn" onclick="customFormatId(this)" title="Format Tersendiri">🔠</button>
+                        <button class="btn btn-danger btn-sm action-btn" onclick="deleteRow(this)" title="Padam">❎</button>
                     </td>
                 `;
                 tableBody.appendChild(row);
             }
             
-            showAlert(`${count} ID card telah dijana`, 'success');
+            showAlert(`✅ ${count} ID card telah dijana`, 'success');
         });
         
         // Save user codes to Google Sheets
@@ -593,7 +716,7 @@
                 .map(el => el.textContent);
             
             if (codes.length === 0) {
-                showAlert('Tiada kode user untuk disimpan!', 'warning');
+                showAlert('❌ Tiada kode user untuk disimpan!', 'warning');
                 return;
             }
             
@@ -612,14 +735,14 @@
                 const result = await response.json();
                 
                 if (result.status === 'success') {
-                    showAlert('Kode user berjaya disimpan ke Google Sheets!', 'success');
+                    showAlert('✅ ' + result.message, 'success');
                     loadUserHistory();
                 } else {
-                    showAlert('Ralat semasa menyimpan: ' + result.message, 'danger');
+                    showAlert('❌ ' + result.message, 'danger');
                 }
             } catch (error) {
                 console.error('Save error:', error);
-                showAlert('Ralat semasa menyimpan: ' + error.message, 'danger');
+                showAlert('❌ Ralat semasa menyimpan: ' + error.message, 'danger');
             }
         });
         
@@ -629,7 +752,7 @@
                 .map(el => el.textContent);
             
             if (cards.length === 0) {
-                showAlert('Tiada ID card untuk disimpan!', 'warning');
+                showAlert('❌ Tiada ID card untuk disimpan!', 'warning');
                 return;
             }
             
@@ -648,14 +771,14 @@
                 const result = await response.json();
                 
                 if (result.status === 'success') {
-                    showAlert('ID Card berjaya disimpan ke Google Sheets!', 'success');
+                    showAlert('✅ ' + result.message, 'success');
                     loadIdHistory();
                 } else {
-                    showAlert('Ralat semasa menyimpan: ' + result.message, 'danger');
+                    showAlert('❌ ' + result.message, 'danger');
                 }
             } catch (error) {
                 console.error('Save error:', error);
-                showAlert('Ralat semasa menyimpan: ' + error.message, 'danger');
+                showAlert('❌ Ralat semasa menyimpan: ' + error.message, 'danger');
             }
         });
         
@@ -681,19 +804,17 @@
                         const row = document.createElement('tr');
                         const date = new Date(item.date);
                         row.innerHTML = `
-                            <td>${index + 1}</td>
-                            <td>${item.code}</td>
-                            <td>${date.toLocaleDateString('ms-MY')} ${date.toLocaleTimeString('ms-MY')}</td>
+                            <td class="fw-bold">${index + 1}</td>
+                            <td><code>${item.code}</code></td>
+                            <td class="text-muted">${date.toLocaleDateString('ms-MY')} ${date.toLocaleTimeString('ms-MY')}</td>
                         `;
                         tableBody.appendChild(row);
                     });
-                    showAlert('Sejarah kode user dimuatkan', 'success');
                 } else {
-                    tableBody.innerHTML = '<tr><td colspan="3" class="text-center">Tiada sejarah kode user</td></tr>';
+                    tableBody.innerHTML = '<tr><td colspan="3" class="text-center text-muted py-3">Tiada sejarah kode user</td></tr>';
                 }
             } catch (error) {
                 console.error('Load history error:', error);
-                showAlert('Ralat semasa memuat sejarah: ' + error.message, 'danger');
             }
         }
         
@@ -719,19 +840,17 @@
                         const row = document.createElement('tr');
                         const date = new Date(item.date);
                         row.innerHTML = `
-                            <td>${index + 1}</td>
-                            <td>${item.code}</td>
-                            <td>${date.toLocaleDateString('ms-MY')} ${date.toLocaleTimeString('ms-MY')}</td>
+                            <td class="fw-bold">${index + 1}</td>
+                            <td><code>${item.code}</code></td>
+                            <td class="text-muted">${date.toLocaleDateString('ms-MY')} ${date.toLocaleTimeString('ms-MY')}</td>
                         `;
                         tableBody.appendChild(row);
                     });
-                    showAlert('Sejarah ID card dimuatkan', 'success');
                 } else {
-                    tableBody.innerHTML = '<tr><td colspan="3" class="text-center">Tiada sejarah ID card</td></tr>';
+                    tableBody.innerHTML = '<tr><td colspan="3" class="text-center text-muted py-3">Tiada sejarah ID card</td></tr>';
                 }
             } catch (error) {
                 console.error('Load history error:', error);
-                showAlert('Ralat semasa memuat sejarah: ' + error.message, 'danger');
             }
         }
         
@@ -747,9 +866,9 @@
             
             if (codes) {
                 copyToClipboard(codes);
-                showAlert('Semua kode user telah disalin!', 'success');
+                showAlert('✅ Semua kode user telah disalin!', 'success');
             } else {
-                showAlert('Tiada kode user untuk disalin!', 'warning');
+                showAlert('❌ Tiada kode user untuk disalin!', 'warning');
             }
         });
         
@@ -761,9 +880,9 @@
             
             if (codes) {
                 copyToClipboard(codes);
-                showAlert('Semua ID card telah disalin!', 'success');
+                showAlert('✅ Semua ID card telah disalin!', 'success');
             } else {
-                showAlert('Tiada ID card untuk disalin!', 'warning');
+                showAlert('❌ Tiada ID card untuk disalin!', 'warning');
             }
         });
         
@@ -787,33 +906,33 @@
             const row = element.closest('tr');
             const codeCell = row.querySelector('.code-text');
             codeCell.textContent = generateUserCode();
-            showAlert('Kode user dijana semula', 'info');
+            showAlert('🔄 Kode user dijana semula', 'info');
         }
         
         function regenerateIdCard(element) {
             const row = element.closest('tr');
             const codeCell = row.querySelector('.code-text');
             codeCell.textContent = generateIdCard();
-            showAlert('ID card dijana semula', 'info');
+            showAlert('🔄 ID card dijana semula', 'info');
         }
         
         function customFormatUser(element) {
             const customFormat = prompt('Masukkan format tersendiri (contoh: ABC12345R):');
-            if (customFormat) {
+            if (customFormat && customFormat.trim() !== '') {
                 const row = element.closest('tr');
                 const codeCell = row.querySelector('.code-text');
-                codeCell.textContent = customFormat;
-                showAlert('Format kustom diterapkan', 'info');
+                codeCell.textContent = customFormat.trim();
+                showAlert('🔠 Format kustom diterapkan', 'info');
             }
         }
         
         function customFormatId(element) {
             const customFormat = prompt('Masukkan format tersendiri (contoh: ABC12345RRMM6789):');
-            if (customFormat) {
+            if (customFormat && customFormat.trim() !== '') {
                 const row = element.closest('tr');
                 const codeCell = row.querySelector('.code-text');
-                codeCell.textContent = customFormat;
-                showAlert('Format kustom diterapkan', 'info');
+                codeCell.textContent = customFormat.trim();
+                showAlert('🔠 Format kustom diterapkan', 'info');
             }
         }
         
@@ -825,11 +944,15 @@
                 // Update row numbers
                 const table = row.closest('tbody');
                 const rows = table.querySelectorAll('tr');
-                rows.forEach((row, index) => {
-                    row.cells[0].textContent = index + 1;
-                });
+                if (rows.length === 0) {
+                    table.innerHTML = '<tr><td colspan="3" class="text-center text-muted py-4">Tiada kode user dijana. Klik "Jana Kode User" untuk mula.</td></tr>';
+                } else {
+                    rows.forEach((row, index) => {
+                        row.cells[0].textContent = index + 1;
+                    });
+                }
                 
-                showAlert('Baris dipadam', 'info');
+                showAlert('❎ Baris dipadam', 'info');
             }
         }
     </script>
