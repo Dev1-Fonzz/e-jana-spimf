@@ -63,9 +63,19 @@
             border: 1px solid #dee2e6;
             border-radius: 5px;
         }
+        .alert-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            min-width: 300px;
+        }
     </style>
 </head>
 <body>
+    <!-- Alert Message -->
+    <div id="alert-message" class="alert-message" style="display: none;"></div>
+
     <!-- Authentication Pages -->
     <div id="auth-pages">
         <!-- Login Page -->
@@ -81,7 +91,7 @@
                     <input type="password" class="form-control" id="password" required>
                 </div>
                 <div class="d-grid">
-                    <button type="submit" class="btn btn-primary">Teruskan</button>
+                    <button type="submit" class="btn btn-primary" id="login-btn">Teruskan</button>
                 </div>
                 <div class="mt-3 text-center">
                     <a href="#" id="show-signup">Daftar Akaun Baru</a>
@@ -106,7 +116,7 @@
                     <input type="text" class="form-control" id="signup-nama" required>
                 </div>
                 <div class="d-grid">
-                    <button type="submit" class="btn btn-primary">Daftar</button>
+                    <button type="submit" class="btn btn-primary" id="signup-btn">Daftar</button>
                 </div>
                 <div class="mt-3 text-center">
                     <a href="#" id="show-login">Kembali ke Log Masuk</a>
@@ -260,7 +270,19 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // Ganti URL_DEPLOYMENT dengan URL deployment Google Apps Script Anda
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzeXE9nCppIjbpXuoxTw5NdFbyhjl3EZKs2gc_QnfDOacW0hAmKLc4SrgUUScBIbi7j/exec'; // Ganti dengan URL deployment GAS
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxv7D25raLaCBjwkGc_8ocOWmrqRUgayHEkHbXmTKWxQ1cLYbs_t3rmEeg7Yum5ogPU/exec'; // Ganti dengan URL deployment GAS Anda
+
+        // Show alert message
+        function showAlert(message, type) {
+            const alertDiv = document.getElementById('alert-message');
+            alertDiv.innerHTML = message;
+            alertDiv.className = `alert alert-${type} alert-message`;
+            alertDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                alertDiv.style.display = 'none';
+            }, 5000);
+        }
 
         // Authentication functionality
         document.getElementById('show-signup').addEventListener('click', function(e) {
@@ -281,6 +303,15 @@
             
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
+            const loginBtn = document.getElementById('login-btn');
+            
+            if (!username || !password) {
+                showAlert('Sila isi semua maklumat log masuk', 'danger');
+                return;
+            }
+            
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'Sedang Log Masuk...';
             
             try {
                 const response = await fetch(SCRIPT_URL, {
@@ -294,22 +325,29 @@
                 const result = await response.json();
                 
                 if (result.status === 'success') {
+                    showAlert('Log masuk berjaya!', 'success');
+                    
                     localStorage.setItem('username', username);
                     localStorage.setItem('nama', result.nama);
                     
-                    document.getElementById('auth-pages').style.display = 'none';
-                    document.getElementById('main-page').style.display = 'block';
-                    document.getElementById('user-name').textContent = result.nama || username;
-                    
-                    // Load history
-                    loadUserHistory();
-                    loadIdHistory();
+                    setTimeout(() => {
+                        document.getElementById('auth-pages').style.display = 'none';
+                        document.getElementById('main-page').style.display = 'block';
+                        document.getElementById('user-name').textContent = result.nama || username;
+                        
+                        // Load history
+                        loadUserHistory();
+                        loadIdHistory();
+                    }, 1000);
                 } else {
-                    alert(result.message);
+                    showAlert(result.message, 'danger');
                 }
             } catch (error) {
                 console.error('Login error:', error);
-                alert('Ralat semasa log masuk: ' + error.message);
+                showAlert('Ralat semasa log masuk: ' + error.message, 'danger');
+            } finally {
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'Teruskan';
             }
         });
 
@@ -320,6 +358,15 @@
             const username = document.getElementById('signup-username').value;
             const password = document.getElementById('signup-password').value;
             const nama = document.getElementById('signup-nama').value;
+            const signupBtn = document.getElementById('signup-btn');
+            
+            if (!username || !password || !nama) {
+                showAlert('Sila isi semua maklumat pendaftaran', 'danger');
+                return;
+            }
+            
+            signupBtn.disabled = true;
+            signupBtn.textContent = 'Sedang Mendaftar...';
             
             try {
                 const response = await fetch(SCRIPT_URL, {
@@ -333,16 +380,22 @@
                 const result = await response.json();
                 
                 if (result.status === 'success') {
-                    alert('Pendaftaran berjaya! Sila log masuk.');
-                    document.getElementById('signup-page').style.display = 'none';
-                    document.getElementById('login-page').style.display = 'block';
-                    document.getElementById('signup-form').reset();
+                    showAlert(result.message, 'success');
+                    
+                    setTimeout(() => {
+                        document.getElementById('signup-page').style.display = 'none';
+                        document.getElementById('login-page').style.display = 'block';
+                        document.getElementById('signup-form').reset();
+                    }, 2000);
                 } else {
-                    alert(result.message);
+                    showAlert(result.message, 'danger');
                 }
             } catch (error) {
                 console.error('Signup error:', error);
-                alert('Ralat semasa pendaftaran: ' + error.message);
+                showAlert('Ralat semasa pendaftaran: ' + error.message, 'danger');
+            } finally {
+                signupBtn.disabled = false;
+                signupBtn.textContent = 'Daftar';
             }
         });
         
@@ -354,6 +407,7 @@
             document.getElementById('auth-pages').style.display = 'block';
             document.getElementById('login-page').style.display = 'block';
             document.getElementById('login-form').reset();
+            showAlert('Anda telah log keluar', 'info');
         });
         
         // Check if user is already logged in
@@ -418,6 +472,8 @@
                 `;
                 tableBody.appendChild(row);
             }
+            
+            showAlert(`${count} kode user telah dijana`, 'success');
         });
         
         // Generate ID cards
@@ -441,6 +497,8 @@
                 `;
                 tableBody.appendChild(row);
             }
+            
+            showAlert(`${count} ID card telah dijana`, 'success');
         });
         
         // Save user codes to Google Sheets
@@ -449,7 +507,7 @@
                 .map(el => el.textContent);
             
             if (codes.length === 0) {
-                alert('Tiada kode user untuk disimpan!');
+                showAlert('Tiada kode user untuk disimpan!', 'warning');
                 return;
             }
             
@@ -468,14 +526,14 @@
                 const result = await response.json();
                 
                 if (result.status === 'success') {
-                    alert('Kode user berjaya disimpan ke Google Sheets!');
+                    showAlert('Kode user berjaya disimpan ke Google Sheets!', 'success');
                     loadUserHistory();
                 } else {
-                    alert('Ralat semasa menyimpan: ' + result.message);
+                    showAlert('Ralat semasa menyimpan: ' + result.message, 'danger');
                 }
             } catch (error) {
                 console.error('Save error:', error);
-                alert('Ralat semasa menyimpan: ' + error.message);
+                showAlert('Ralat semasa menyimpan: ' + error.message, 'danger');
             }
         });
         
@@ -485,7 +543,7 @@
                 .map(el => el.textContent);
             
             if (cards.length === 0) {
-                alert('Tiada ID card untuk disimpan!');
+                showAlert('Tiada ID card untuk disimpan!', 'warning');
                 return;
             }
             
@@ -504,14 +562,14 @@
                 const result = await response.json();
                 
                 if (result.status === 'success') {
-                    alert('ID Card berjaya disimpan ke Google Sheets!');
+                    showAlert('ID Card berjaya disimpan ke Google Sheets!', 'success');
                     loadIdHistory();
                 } else {
-                    alert('Ralat semasa menyimpan: ' + result.message);
+                    showAlert('Ralat semasa menyimpan: ' + result.message, 'danger');
                 }
             } catch (error) {
                 console.error('Save error:', error);
-                alert('Ralat semasa menyimpan: ' + error.message);
+                showAlert('Ralat semasa menyimpan: ' + error.message, 'danger');
             }
         });
         
@@ -533,20 +591,23 @@
                 tableBody.innerHTML = '';
                 
                 if (result.status === 'success' && result.data.length > 0) {
-                    result.data.forEach((code, index) => {
+                    result.data.forEach((item, index) => {
                         const row = document.createElement('tr');
+                        const date = new Date(item.date);
                         row.innerHTML = `
                             <td>${index + 1}</td>
-                            <td>${code}</td>
-                            <td>${new Date().toLocaleDateString('ms-MY')}</td>
+                            <td>${item.code}</td>
+                            <td>${date.toLocaleDateString('ms-MY')} ${date.toLocaleTimeString('ms-MY')}</td>
                         `;
                         tableBody.appendChild(row);
                     });
+                    showAlert('Sejarah kode user dimuatkan', 'success');
                 } else {
                     tableBody.innerHTML = '<tr><td colspan="3" class="text-center">Tiada sejarah kode user</td></tr>';
                 }
             } catch (error) {
                 console.error('Load history error:', error);
+                showAlert('Ralat semasa memuat sejarah: ' + error.message, 'danger');
             }
         }
         
@@ -568,20 +629,23 @@
                 tableBody.innerHTML = '';
                 
                 if (result.status === 'success' && result.data.length > 0) {
-                    result.data.forEach((card, index) => {
+                    result.data.forEach((item, index) => {
                         const row = document.createElement('tr');
+                        const date = new Date(item.date);
                         row.innerHTML = `
                             <td>${index + 1}</td>
-                            <td>${card}</td>
-                            <td>${new Date().toLocaleDateString('ms-MY')}</td>
+                            <td>${item.code}</td>
+                            <td>${date.toLocaleDateString('ms-MY')} ${date.toLocaleTimeString('ms-MY')}</td>
                         `;
                         tableBody.appendChild(row);
                     });
+                    showAlert('Sejarah ID card dimuatkan', 'success');
                 } else {
                     tableBody.innerHTML = '<tr><td colspan="3" class="text-center">Tiada sejarah ID card</td></tr>';
                 }
             } catch (error) {
                 console.error('Load history error:', error);
+                showAlert('Ralat semasa memuat sejarah: ' + error.message, 'danger');
             }
         }
         
@@ -597,9 +661,9 @@
             
             if (codes) {
                 copyToClipboard(codes);
-                alert('Semua kode user telah disalin!');
+                showAlert('Semua kode user telah disalin!', 'success');
             } else {
-                alert('Tiada kode user untuk disalin!');
+                showAlert('Tiada kode user untuk disalin!', 'warning');
             }
         });
         
@@ -611,18 +675,25 @@
             
             if (codes) {
                 copyToClipboard(codes);
-                alert('Semua ID card telah disalin!');
+                showAlert('Semua ID card telah disalin!', 'success');
             } else {
-                alert('Tiada ID card untuk disalin!');
+                showAlert('Tiada ID card untuk disalin!', 'warning');
             }
         });
         
         // Utility functions
         function copyToClipboard(text) {
             navigator.clipboard.writeText(text).then(function() {
-                alert('Teks telah disalin: ' + text);
+                console.log('Teks disalin: ' + text);
             }, function(err) {
                 console.error('Gagal menyalin teks: ', err);
+                // Fallback untuk browser lama
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
             });
         }
         
@@ -630,12 +701,14 @@
             const row = element.closest('tr');
             const codeCell = row.querySelector('.code-text');
             codeCell.textContent = generateUserCode();
+            showAlert('Kode user dijana semula', 'info');
         }
         
         function regenerateIdCard(element) {
             const row = element.closest('tr');
             const codeCell = row.querySelector('.code-text');
             codeCell.textContent = generateIdCard();
+            showAlert('ID card dijana semula', 'info');
         }
         
         function customFormatUser(element) {
@@ -644,6 +717,7 @@
                 const row = element.closest('tr');
                 const codeCell = row.querySelector('.code-text');
                 codeCell.textContent = customFormat;
+                showAlert('Format kustom diterapkan', 'info');
             }
         }
         
@@ -653,6 +727,7 @@
                 const row = element.closest('tr');
                 const codeCell = row.querySelector('.code-text');
                 codeCell.textContent = customFormat;
+                showAlert('Format kustom diterapkan', 'info');
             }
         }
         
@@ -667,6 +742,8 @@
                 rows.forEach((row, index) => {
                     row.cells[0].textContent = index + 1;
                 });
+                
+                showAlert('Baris dipadam', 'info');
             }
         }
     </script>
